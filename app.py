@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, session
 from models import Room, Customer, Booking, Hotel, Employee
 from datetime import datetime, date
 import openpyxl, os
@@ -35,6 +35,34 @@ def home():
 @app.route('/about')
 def about():
     return render_template('about.html', hotel=hotel)
+
+# -------------------------------------
+# Admin Login
+# -------------------------------------
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+
+        if not username or not password:
+            error = "⚠️ Please enter both username and password."
+        elif admin.login(username, password):
+            session['admin'] = True
+            return redirect(url_for('home'))
+        else:
+            error = "❌ Wrong credentials! Try again."
+    return render_template('login.html', error=error)
+
+# -------------------------------------
+# Admin Logout
+# -------------------------------------
+@app.route('/logout')
+def logout():
+    session.pop('admin', None)
+    return redirect(url_for('home'))
+
 
 if __name__=="__main__":
     app.run(debug=True)

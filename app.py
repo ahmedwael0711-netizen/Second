@@ -99,13 +99,11 @@ def login():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
 
-        if not username or not password:
-            error = "⚠️ Please enter both username and password."
-        elif admin.login(username, password):
+        if admin.login(username, password):
             session['admin'] = True
             return redirect(url_for('admin_panel'))
         else:
-            error = "❌ Wrong credentials! Try again."
+            error = "❌ Invalid username or password."
 
     return render_template('login.html', error=error)
 
@@ -130,6 +128,35 @@ def admin_panel():
     bookings = [row for row in ws.iter_rows(min_row=2, values_only=True) if any(row)]
 
     return render_template('admin.html', bookings=bookings, hotel=hotel)
+
+
+# -------------------------------------
+# UPDATE STATUS Feature (this branch job)
+# -------------------------------------
+@app.route('/update_status/<booking_id>/<new_status>', methods=['POST'])
+def update_status(booking_id, new_status):
+    if 'admin' not in session:
+        return redirect(url_for('login'))
+
+    wb = openpyxl.load_workbook('data.xlsx')
+    ws = wb.active
+
+    for row in range(2, ws.max_row + 1):
+        if str(ws.cell(row=row, column=1).value) == str(booking_id):
+
+            ws.cell(row=row, column=8).value = new_status
+
+            # Release room if cancelled or checked out
+            if new_status in ["Cancelled", "CheckedOut"]:
+                room_type = ws.cell(row=row, column=5).value
+                for r in hotel.listOfRooms:
+                    if r.roomType == room_type:
+                        r.releaseRoom()
+
+            wb.save('data.xlsx')
+            break
+
+    return redirect(url_for('admin_panel'))
 
 
 if __name__ == "__main__":

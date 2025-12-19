@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<title>Rate Your Stay</title>
+
+<style>
+    :root {
+        --bg-dark: #111; --card-dark: #1e1e1e; --text-dark: #e5e5e5;
+        --bg-light: #f9f9f9; --card-light: white; --text-light: black;
+        --accent: #0d6efd;
+    }
+
+    [data-theme="dark"] { --bg:#111; --card:#1e1e1e; --text:#e5e5e5; }
+    [data-theme="light"] { --bg:#f9f9f9; --card:white; --text:black; }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: Poppins, sans-serif;
+        padding: 50px;
+        text-align: center;
+        transition: .3s;
+    }
+
+    /* 🔥 Theme Button EXACT Like Home */
+    .theme-btn {
+        position: fixed;
+        top: 16px;
+        right: 18px;
+        background: #ffffffdd;
+        border: none;
+        padding: 6px 9px;
+        border-radius: 50%;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0,0,0,.3);
+        z-index: 9999;
+    }
+
+    .box {
+        width: 350px;
+        margin: auto;
+        padding: 25px;
+        background: var(--card);
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,.4);
+    }
+
+    .stars input { display: none; }
+
+    .stars label {
+        font-size: 40px;
+        color: #777;
+        cursor: pointer;
+    }
+
+    .stars input:checked ~ label,
+    .stars label:hover,
+    .stars label:hover ~ label {
+        color: gold;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        background: var(--accent);
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+</style>
+
+<script>
+    const saved = localStorage.getItem("themeMode") || "dark";
+    document.documentElement.setAttribute("data-theme", saved);
+
+    function toggleTheme() {
+        let mode = document.documentElement.getAttribute("data-theme");
+        let next = mode === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("themeMode", next);
+    }
+</script>
+</head>
+
+<body>
+
+<!-- 🔥 THEME BUTTON SAME AS HOME -->
+<button class="theme-btn" onclick="toggleTheme()">🌓</button>
+
+<h1>⭐ Rate Your Stay</h1>
+
+<div class="box">
+    <form method="POST">
+        <div class="stars">
+            <input type="radio" name="stars" id="s5" value="5" required><label for="s5">⭐</label>
+            <input type="radio" name="stars" id="s4" value="4"><label for="s4">⭐</label>
+            <input type="radio" name="stars" id="s3" value="3"><label for="s3">⭐</label>
+            <input type="radio" name="stars" id="s2" value="2"><label for="s2">⭐</label>
+            <input type="radio" name="stars" id="s1" value="1"><label for="s1">⭐</label>
+        </div>
+
+        <button type="submit">Submit Rating</button>
+    </form>
+</div>
+
+
+
+
+{% include "footer.html" %}
+
+
+</body>
+</html>
